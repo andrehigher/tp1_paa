@@ -1,2 +1,2 @@
 #!/bin/bash
-gcc -Wall -lc main.c scripts/input.c -o tp1
+gcc -Wall -lc main.c scripts/*.c -o tp1
