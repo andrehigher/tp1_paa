@@ -5,6 +5,7 @@
 */
 void readInput(int argc, char *argv[]){
     FILE *fp;
+    Graph *graph;
 
     if(argc < 3){
         printf("This program needs to receive the input and output.\n");
@@ -17,12 +18,13 @@ void readInput(int argc, char *argv[]){
         printf("%s doesn't exist.\n", argv[1]);
         return;
     }
-    readNodes(fp);
-    readEdges(fp);
+    graph = readNodes(fp);
+    readEdges(graph, fp);
+    printf("\n");
     fclose(fp);
 }
 
-void readNodes(FILE *fp){
+Graph* readNodes(FILE *fp){
     int travels;
     int i;
     int travelId, passenger, driver, amount, seats;
@@ -36,17 +38,16 @@ void readNodes(FILE *fp){
         fscanf(fp, "%d %d %d %d %d %f", &travelId, &passenger, &driver, &amount, &seats, &distance);
         addNode(head, travelId, passenger, driver, amount, seats, distance);
     }
-    printGraph(head);
-    printf("\n");
+    return head;
 }
 
-void readEdges(FILE *fp){
+void readEdges(Graph *graph, FILE *fp){
     int i, sharing;
-    int sharing1, sharing2;
+    int source, destination;
     fscanf(fp, "%d", &sharing);
     for (i=0; i<sharing; i++) {
-        fscanf(fp, "%d %d", &sharing1, &sharing2);
-        printf("%d %d\n", sharing1, sharing2);
+        fscanf(fp, "%d %d", &source, &destination);
+        addEdge(graph, source, destination);
     }
-    printf("\n");
+    printGraph(graph);
 }

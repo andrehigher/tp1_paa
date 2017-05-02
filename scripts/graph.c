@@ -25,10 +25,43 @@ void addNode(Graph *graph, int travelId, int passenger, int driver, int amount, 
 	aux->Next = newNode;
 }
 
+ListAdj* createEdge(int destination) {
+    ListAdj *list = (ListAdj *) malloc(sizeof(ListAdj));
+    list->TravelId = destination;
+    list->Next = NULL;
+    return list;
+}
+
+void addEdge(Graph *graph, int source, int destination) {
+    Graph *aux = graph;
+    while(aux != NULL && aux->TravelId != source) {
+        aux = aux->Next;
+    }
+    if(aux == NULL || aux->TravelId != source) {
+        printf("Impossible to add an edge from %d to %d\n", source, destination);
+        return;
+    }
+    insertEdge(aux, destination);
+}
+
+void insertEdge(Graph *node, int destination){
+    ListAdj *newEdge = createEdge(destination);
+    newEdge->Next = node->ListAdj;
+    node->ListAdj = newEdge;
+}
+
 void printGraph(Graph *graph) {
     Graph *aux = graph;
+    ListAdj *listAux;
     while(aux != NULL) {
         printf("%d %d %d %d %d %f\n", aux->TravelId, aux->Passenger, aux->Driver, aux->Amount, aux->Seats, aux->Distance);
+        listAux = aux->ListAdj;
+        printf("Edges:");
+        while(listAux != NULL) {
+            printf("%d->", listAux->TravelId);
+            listAux = listAux->Next;
+        }
+        printf("NULL\n");
         aux = aux->Next;
     }
 }

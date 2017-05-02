@@ -20,6 +20,11 @@ typedef struct _Graph {
 Graph* createGraph(int travelId, int passenger, int driver, int amount, int seats, float distance);
 Graph* createNode(int travelId, int passenger, int driver, int amount, int seats, float distance);
 void addNode(Graph *graph, int travelId, int passenger, int driver, int amount, int seats, float distance);
+
+ListAdj* createEdge(int destination);
+void addEdge(Graph *node, int source, int destination);
+void insertEdge(Graph *node, int destination);
+
 void printGraph(Graph *graph);
 
 #endif /*GRAPH_H_*/

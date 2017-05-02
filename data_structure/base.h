@@ -8,7 +8,7 @@
 #define TRUE 1
 
 void readInput(int argc, char *argv[]);
-void readNodes(FILE *fp);
-void readEdges(FILE *fp);
+Graph* readNodes(FILE *fp);
+void readEdges(Graph *graph, FILE *fp);
 
 #endif /*BASE_H_*/
