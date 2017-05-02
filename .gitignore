@@ -1,3 +1,4 @@
 *.o
 tp1
 tp1.dSYM
+.vscode
