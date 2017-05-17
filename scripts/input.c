@@ -52,9 +52,9 @@ void readEdges(Graph *graph, FILE *fp){
         combination[i][0] = source;
         combination[i][1] = destination;
     }
-    printGraph(graph);
+    // printGraph(graph);
     printCombination(graph, combination, sharing);
-    printGraph(graph);
+    // printGraph(graph);
 }
 
 void printCombination(Graph *graph, int combination[][2], int total){
@@ -64,7 +64,7 @@ void printCombination(Graph *graph, int combination[][2], int total){
     for (i=0; i<total; i++) {
         benefit = 0;
         printf("%d -> %d\n", combination[i][0], combination[i][1]);
-        resetAvaiableSeats(graph, combination[i][1]);
+        resetAvaiableSeats(graph);
         benefit = calculateBenefit(graph, combination[i][0], combination[i][1]);
         for (k=0; k<total; k++) {
             hash[k] = 0;

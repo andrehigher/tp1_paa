@@ -28,6 +28,6 @@ void insertEdge(Graph *node, int destination);
 
 void printGraph(Graph *graph);
 float calculateBenefit(Graph *graph, int source, int destination);
-void resetAvaiableSeats(Graph *graph, int vertex);
+void resetAvaiableSeats(Graph *graph);
 
 #endif /*GRAPH_H_*/
