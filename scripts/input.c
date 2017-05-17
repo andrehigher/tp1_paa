@@ -45,9 +45,32 @@ void readEdges(Graph *graph, FILE *fp){
     int i, sharing;
     int source, destination;
     fscanf(fp, "%d", &sharing);
+    int combination[sharing][2];
     for (i=0; i<sharing; i++) {
         fscanf(fp, "%d %d", &source, &destination);
         addEdge(graph, source, destination);
+        combination[i][0] = source;
+        combination[i][1] = destination;
     }
-    printGraph(graph);
+    printCombination(combination, sharing);
+    // printGraph(graph);
+}
+
+void printCombination(int combination[][2], int total){
+    int i, j, k, hash[total];
+
+    for (i=0; i<total; i++) {
+        printf("%d -> %d\n", combination[i][0], combination[i][1]);
+        for (k=0; k<total; k++) {
+            hash[k] = 0;
+        }
+        hash[combination[i][0]] = 1;
+        for (j=i+1;j<total;j++){
+            if(combination[j][1] != combination[i][0] && hash[combination[j][1]] == 0 && hash[combination[j][0]] == 0){
+                hash[combination[j][0]] = 1;
+                printf("%d -> %d\n", combination[j][0], combination[j][1]);
+            }
+        }
+        printf("****\n");
+    }
 }
