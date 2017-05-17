@@ -26,5 +26,6 @@ void addEdge(Graph *node, int source, int destination);
 void insertEdge(Graph *node, int destination);
 
 void printGraph(Graph *graph);
+int calculateBenefit(Graph *graph, int source, int destination);
 
 #endif /*GRAPH_H_*/

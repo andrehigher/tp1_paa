@@ -10,6 +10,6 @@
 void readInput(int argc, char *argv[]);
 Graph* readNodes(FILE *fp);
 void readEdges(Graph *graph, FILE *fp);
-void printCombination(int combination[][2], int total);
+void printCombination(Graph *graph, int combination[][2], int total);
 
 #endif /*BASE_H_*/

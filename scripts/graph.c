@@ -65,3 +65,26 @@ void printGraph(Graph *graph) {
         aux = aux->Next;
     }
 }
+
+int calculateBenefit(Graph *graph, int source, int destination) {
+    Graph *aux = graph;
+    Graph *nodeSource = NULL, *nodeDestination = NULL;
+    while(aux != NULL) {
+        if(source == aux->TravelId){
+            nodeSource = aux;
+        }
+        if(destination == aux->TravelId){
+            nodeDestination = aux;
+        }
+        aux = aux->Next;
+    }
+
+    printf("nodeSource: %d %d %d %d %d %f\n", nodeSource->TravelId, nodeSource->Passenger, nodeSource->Driver, nodeSource->Amount, nodeSource->Seats, nodeSource->Distance);
+    printf("nodeDestination: %d %d %d %d %d %f\n", nodeDestination->TravelId, nodeDestination->Passenger, nodeDestination->Driver, nodeDestination->Amount, nodeDestination->Seats, nodeDestination->Distance);
+    if(nodeDestination->Amount + nodeSource->Amount <= nodeDestination->Seats) {
+        nodeDestination->Amount += nodeSource->Amount;
+        return nodeDestination->Amount;
+    } else {
+        return 0;
+    }
+}
