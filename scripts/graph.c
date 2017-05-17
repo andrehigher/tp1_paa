@@ -1,24 +1,25 @@
 #include "../data_structure/base.h"
 
-Graph *createGraph(int travelId, int passenger, int driver, int amount, int seats, float distance) {
-    return createNode(travelId, passenger, driver, amount, seats, distance);
+Graph *createGraph(int travelId, int passenger, int driver, int amount, int seats, float benefit) {
+    return createNode(travelId, passenger, driver, amount, seats, benefit);
 }
-Graph* createNode(int travelId, int passenger, int driver, int amount, int seats, float distance) {
+Graph* createNode(int travelId, int passenger, int driver, int amount, int seats, float benefit) {
     Graph *graph = (Graph *) malloc(sizeof(Graph));
     graph->TravelId = travelId;
     graph->Passenger = passenger;
     graph->Driver = driver;
     graph->Amount = amount;
     graph->Seats = seats;
-    graph->Distance = distance;
+    graph->Benefit = benefit;
+    graph->RemainingSeats = seats - amount;
     graph->ListAdj = NULL;
     graph->Next = NULL;
     return graph;
 }
 
-void addNode(Graph *graph, int travelId, int passenger, int driver, int amount, int seats, float distance){
+void addNode(Graph *graph, int travelId, int passenger, int driver, int amount, int seats, float benefit){
     Graph *aux = graph;
-    Graph *newNode = createNode(travelId, passenger, driver, amount, seats, distance);
+    Graph *newNode = createNode(travelId, passenger, driver, amount, seats, benefit);
 	while ( aux->Next != NULL ) {
 		aux = aux->Next;
 	}
@@ -54,7 +55,7 @@ void printGraph(Graph *graph) {
     Graph *aux = graph;
     ListAdj *listAux;
     while(aux != NULL) {
-        printf("%d %d %d %d %d %f\n", aux->TravelId, aux->Passenger, aux->Driver, aux->Amount, aux->Seats, aux->Distance);
+        printf("%d %d %d %d %d %f %d\n", aux->TravelId, aux->Passenger, aux->Driver, aux->Amount, aux->Seats, aux->Benefit, aux->RemainingSeats);
         listAux = aux->ListAdj;
         printf("Edges:");
         while(listAux != NULL) {
@@ -66,7 +67,7 @@ void printGraph(Graph *graph) {
     }
 }
 
-int calculateBenefit(Graph *graph, int source, int destination) {
+float calculateBenefit(Graph *graph, int source, int destination) {
     Graph *aux = graph;
     Graph *nodeSource = NULL, *nodeDestination = NULL;
     while(aux != NULL) {
@@ -79,12 +80,24 @@ int calculateBenefit(Graph *graph, int source, int destination) {
         aux = aux->Next;
     }
 
-    printf("nodeSource: %d %d %d %d %d %f\n", nodeSource->TravelId, nodeSource->Passenger, nodeSource->Driver, nodeSource->Amount, nodeSource->Seats, nodeSource->Distance);
-    printf("nodeDestination: %d %d %d %d %d %f\n", nodeDestination->TravelId, nodeDestination->Passenger, nodeDestination->Driver, nodeDestination->Amount, nodeDestination->Seats, nodeDestination->Distance);
-    if(nodeDestination->Amount + nodeSource->Amount <= nodeDestination->Seats) {
-        nodeDestination->Amount += nodeSource->Amount;
-        return nodeDestination->Amount;
+    printf("nodeSource: %d %d %d %d %d %f %d\n", nodeSource->TravelId, nodeSource->Passenger, nodeSource->Driver, nodeSource->Amount, nodeSource->Seats, nodeSource->Benefit, nodeSource->RemainingSeats);
+    printf("nodeDestination: %d %d %d %d %d %f %d\n", nodeDestination->TravelId, nodeDestination->Passenger, nodeDestination->Driver, nodeDestination->Amount, nodeDestination->Seats, nodeDestination->Benefit, nodeDestination->RemainingSeats);
+    if(nodeDestination->RemainingSeats - nodeSource->Amount >= 0) {
+        nodeDestination->RemainingSeats -= nodeSource->Amount;
+        printf("update nodeDestination: %d %d %d %d %d %f %d\n", nodeDestination->TravelId, nodeDestination->Passenger, nodeDestination->Driver, nodeDestination->Amount, nodeDestination->Seats, nodeDestination->Benefit, nodeDestination->RemainingSeats);
+        return nodeSource->Benefit;
     } else {
         return 0;
+    }
+}
+
+void resetAvaiableSeats(Graph *graph, int vertex) {
+    Graph *aux = graph;
+    while(aux != NULL) {
+        if(vertex == aux->TravelId){
+            aux->RemainingSeats = aux->Seats - aux->Amount;
+            break;
+        }
+        aux = aux->Next;
     }
 }
