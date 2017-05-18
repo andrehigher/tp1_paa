@@ -57,27 +57,62 @@ void readEdges(Graph *graph, FILE *fp){
     // printGraph(graph);
 }
 
-void printCombination(Graph *graph, int combination[][2], int total){
-    int i, j, k, hash[total];
-    int benefit;
+void printCombination(Graph *graph, int combination[][2], int total) {
+    int i, j, k, l, hash[total];
+    int benefit, auxBenefit, bestBenefit = 0;
+    int bestCombination[total][2], auxCombination[total][2];
+
+     for (i=0; i<total; i++) {
+        bestCombination[i][0] = -1;
+        bestCombination[i][1] = -1;
+        auxCombination[i][0] = -1;
+        auxCombination[i][1] = -1;
+     }
 
     for (i=0; i<total; i++) {
+        l=0;
         benefit = 0;
-        printf("%d -> %d\n", combination[i][0], combination[i][1]);
+        // printf("%d -> %d\n", combination[i][0], combination[i][1]);
+        auxCombination[l][0] = combination[i][0];
+        auxCombination[l][1] = combination[i][1];
+        l++;
         resetAvaiableSeats(graph);
         benefit = calculateBenefit(graph, combination[i][0], combination[i][1]);
         for (k=0; k<total; k++) {
             hash[k] = 0;
         }
         hash[combination[i][0]] = 1;
-        for (j=i+1;j<total;j++){
-            if(combination[j][1] != combination[i][0] && hash[combination[j][1]] == 0 && hash[combination[j][0]] == 0){
-                hash[combination[j][0]] = 1;
-                printf("%d -> %d\n", combination[j][0], combination[j][1]);
-                benefit += calculateBenefit(graph, combination[j][0], combination[j][1]);
+        hash[combination[i][1]] = 2;
+        for (j=0;j<total;j++){
+            if(i!=j) {
+                if(hash[combination[j][0]] == 0 && (hash[combination[j][1]] == 0 || hash[combination[j][1]] == 2)) {
+                    auxBenefit = calculateBenefit(graph, combination[j][0], combination[j][1]);
+                    if(auxBenefit > 0) { 
+                        // printf("%d -> %d\n", combination[j][0], combination[j][1]);
+                        hash[combination[j][0]] = 1;
+                        hash[combination[j][1]] = 2;
+                        auxCombination[l][0] = combination[j][0];
+                        auxCombination[l][1] = combination[j][1];
+                        l++;
+                        benefit += auxBenefit;
+                    }
+                }
             }
         }
-        printf("benefit: %d\n", benefit);
-        printf("****\n");
+        // printf("benefit: %d\n", benefit);
+        // printf("bestBenefit: %d\n", bestBenefit);
+        if(benefit > bestBenefit) {
+            printf("********\nFOUND BEST BENEFIT\n");
+            printf("Benefit: %d\n", benefit);
+            bestBenefit = benefit;
+            for (j=0;j<total;j++) {
+                if(auxCombination[j][0] > 0 && auxCombination[j][1] > 0) {
+                    bestCombination[j][0] = auxCombination[j][0];
+                    bestCombination[j][1] = auxCombination[j][0];
+                    printf("%d -> %d\n", auxCombination[j][0], auxCombination[j][1]);
+                }
+            }
+            printf("****\n");
+        }
     }
 }

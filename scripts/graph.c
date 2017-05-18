@@ -87,7 +87,7 @@ float calculateBenefit(Graph *graph, int source, int destination) {
         // printf("update nodeDestination: %d %d %d %d %d %f %d\n", nodeDestination->TravelId, nodeDestination->Passenger, nodeDestination->Driver, nodeDestination->Amount, nodeDestination->Seats, nodeDestination->Benefit, nodeDestination->RemainingSeats);
         return nodeSource->Benefit;
     } else {
-        return -99999;
+        return 0;
     }
 }
 
