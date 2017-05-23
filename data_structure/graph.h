@@ -29,5 +29,6 @@ void insertEdge(Graph *node, int destination);
 void printGraph(Graph *graph);
 float calculateBenefit(Graph *graph, int source, int destination);
 void resetAvaiableSeats(Graph *graph);
+int checkPassengerAvailability(Graph *graph, int source);
 
 #endif /*GRAPH_H_*/

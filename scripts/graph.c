@@ -98,3 +98,14 @@ void resetAvaiableSeats(Graph *graph) {
         aux = aux->Next;
     }
 }
+
+int checkPassengerAvailability(Graph *graph, int source) {
+    Graph *aux = graph;
+    while(aux != NULL) {
+        if(aux->TravelId == source) {
+            return aux->Passenger;
+        }
+        aux = aux->Next;
+    }
+    return 0;
+}

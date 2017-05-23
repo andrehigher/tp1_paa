@@ -73,28 +73,32 @@ void printCombination(Graph *graph, int combination[][2], int total) {
         l=0;
         benefit = 0;
         // printf("%d -> %d\n", combination[i][0], combination[i][1]);
-        auxCombination[l][0] = combination[i][0];
-        auxCombination[l][1] = combination[i][1];
-        l++;
-        resetAvaiableSeats(graph);
-        benefit = calculateBenefit(graph, combination[i][0], combination[i][1]);
-        for (k=0; k<total; k++) {
-            hash[k] = 0;
-        }
-        hash[combination[i][0]] = 1;
-        hash[combination[i][1]] = 2;
-        for (j=0;j<total;j++){
-            if(i!=j) {
-                if(hash[combination[j][0]] == 0 && (hash[combination[j][1]] == 0 || hash[combination[j][1]] == 2)) {
-                    auxBenefit = calculateBenefit(graph, combination[j][0], combination[j][1]);
-                    if(auxBenefit > 0) { 
-                        // printf("%d -> %d\n", combination[j][0], combination[j][1]);
-                        hash[combination[j][0]] = 1;
-                        hash[combination[j][1]] = 2;
-                        auxCombination[l][0] = combination[j][0];
-                        auxCombination[l][1] = combination[j][1];
-                        l++;
-                        benefit += auxBenefit;
+        if (checkPassengerAvailability(graph, combination[i][0]) != 0) {
+            auxCombination[l][0] = combination[i][0];
+            auxCombination[l][1] = combination[i][1];
+            l++;
+            resetAvaiableSeats(graph);
+            benefit = calculateBenefit(graph, combination[i][0], combination[i][1]);
+            for (k=0; k<total; k++) {
+                hash[k] = 0;
+            }
+            hash[combination[i][0]] = 1;
+            hash[combination[i][1]] = 2;
+            for (j=0;j<total;j++){
+                if(i!=j) {
+                    if(checkPassengerAvailability(graph, combination[j][0]) != 0) {
+                        if(hash[combination[j][0]] == 0 && (hash[combination[j][1]] == 0 || hash[combination[j][1]] == 2)) {
+                            auxBenefit = calculateBenefit(graph, combination[j][0], combination[j][1]);
+                            if(auxBenefit > 0) { 
+                                // printf("%d -> %d\n", combination[j][0], combination[j][1]);
+                                hash[combination[j][0]] = 1;
+                                hash[combination[j][1]] = 2;
+                                auxCombination[l][0] = combination[j][0];
+                                auxCombination[l][1] = combination[j][1];
+                                l++;
+                                benefit += auxBenefit;
+                            }
+                        }
                     }
                 }
             }
