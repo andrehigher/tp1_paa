@@ -80,11 +80,8 @@ float calculateBenefit(Graph *graph, int source, int destination) {
         aux = aux->Next;
     }
 
-    // printf("nodeSource: %d %d %d %d %d %f %d\n", nodeSource->TravelId, nodeSource->Passenger, nodeSource->Driver, nodeSource->Amount, nodeSource->Seats, nodeSource->Benefit, nodeSource->RemainingSeats);
-    // printf("nodeDestination: %d %d %d %d %d %f %d\n", nodeDestination->TravelId, nodeDestination->Passenger, nodeDestination->Driver, nodeDestination->Amount, nodeDestination->Seats, nodeDestination->Benefit, nodeDestination->RemainingSeats);
     if(nodeDestination->RemainingSeats - nodeSource->Amount >= 0) {
         nodeDestination->RemainingSeats -= nodeSource->Amount;
-        // printf("update nodeDestination: %d %d %d %d %d %f %d\n", nodeDestination->TravelId, nodeDestination->Passenger, nodeDestination->Driver, nodeDestination->Amount, nodeDestination->Seats, nodeDestination->Benefit, nodeDestination->RemainingSeats);
         return nodeSource->Benefit;
     } else {
         return 0;
