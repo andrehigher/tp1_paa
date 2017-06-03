@@ -9,7 +9,7 @@
 
 void readInput(int argc, char *argv[]);
 Graph* readNodes(FILE *fp);
-void readEdges(Graph *graph, FILE *fp);
-void printCombination(Graph *graph, int combination[][2], int total);
+void readEdges(Graph *graph, FILE *fp, FILE *fpwrite);
+void printCombination(Graph *graph, int combination[][2], int total, FILE *fpwrite);
 
 #endif /*BASE_H_*/
