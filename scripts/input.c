@@ -56,7 +56,7 @@ void readEdges(Graph *graph, FILE *fp, FILE *fpwrite, float *maxBenefit){
     int r;
     int n = sizeof(arr)/sizeof(arr[0]);
     for(r=1;r<=sharing; r++) {
-        printCombinationAux(arr, n, r, graph, combination, maxBenefit);
+        printCombinationAux(arr, n, r, graph, combination, maxBenefit, sharing, fpwrite);
     }
     // old method
     // printCombination(graph, combination, sharing, fpwrite);
@@ -169,36 +169,56 @@ void printCombination(Graph *graph, int combination[][2], int total, FILE *fpwri
     fclose(fpwrite);
 }
 
-void printCombinationAux(int arr[], int n, int r, Graph *graph, int combination[][2], float *maxBenefit) {
+void printCombinationAux(int arr[], int n, int r, Graph *graph, int combination[][2], float *maxBenefit, int total, FILE *fpwrite) {
     // A temporary array to store all combination one by one
     int data[r];
  
     // Print all combination using temprary array 'data[]'
-    combinationUtil(arr, data, 0, n-1, 0, r, graph, combination, maxBenefit);
+    combinationUtil(arr, data, 0, n-1, 0, r, graph, combination, maxBenefit, total, fpwrite);
 }
 
-void combinationUtil(int arr[], int data[], int start, int end, int index, int r, Graph *graph, int combination[][2], float *maxBenefit) {
+void combinationUtil(int arr[], int data[], int start, int end, int index, int r, Graph *graph, int combination[][2], float *maxBenefit, int total, FILE *fpwrite) {
     // Current combination is ready to be printed, print it
-    if (index == r)
-    {
+    if (index == r) {
         float benefit = 0, auxBenefit = 0;
+        int totalResults = 0, results[r];
+        for(int j=0; j<r; j++) {
+            results[j] = -1;
+        }
         resetAvaiableSeats(graph);
         for (int j=0; j<r; j++) {
-            if(checkPassengerAvailability(graph, combination[j][0]) == 1 && checkDriverAvailability(graph, combination[j][1]) == 1 && checkIsDriving(graph, combination[j][0]) == 0 && checkAvailability(graph, combination[j][0]) == 1 && checkSeats(graph, combination[j][0], combination[j][1]) == 1) {
+            if(checkPassengerAvailability(graph, combination[j][0]) == 1 && checkDriverAvailability(graph, combination[j][1]) == 1 && checkIsDriving(graph, combination[j][0]) == 0 && checkAvailability(graph, combination[j][0]) == 1 && checkAvailability(graph, combination[j][1]) == 1 && checkSeats(graph, combination[j][0], combination[j][1]) == 1) {
                 setTravel(graph, combination[j][0], combination[j][1]);
                 benefit += calculateBenefit(graph, combination[j][0], combination[j][1]);
             }
         }
         if(benefit > *maxBenefit) {
             *maxBenefit = benefit;
-            printf("\n\nFOUND MAX BENEFIT\n");
-            printf("benefit: %.1f\n", benefit);
+            rewind(fpwrite);
             resetAvaiableSeats(graph);
             for (int j=0; j<r; j++) {
-                if(checkPassengerAvailability(graph, combination[j][0]) == 1 && checkDriverAvailability(graph, combination[j][1]) == 1 && checkAvailability(graph, combination[j][0]) == 1 && checkSeats(graph, combination[j][0], combination[j][1]) == 1) {
+                if(checkPassengerAvailability(graph, combination[j][0]) == 1 && checkDriverAvailability(graph, combination[j][1]) == 1 && checkIsDriving(graph, combination[j][0]) == 0  && checkAvailability(graph, combination[j][0]) == 1 && checkAvailability(graph, combination[j][1]) == 1 && checkSeats(graph, combination[j][0], combination[j][1]) == 1) {
                     setTravel(graph, combination[j][0], combination[j][1]);
                     benefit += calculateBenefit(graph, combination[j][0], combination[j][1]);
-                    printf("index: %d\t %d -> %d\n", data[j], combination[j][0], combination[j][1]);
+                    if(results[combination[j][1]] == -1) {
+                        totalResults++;
+                        results[combination[j][1]] = combination[j][1];
+                    }
+                }
+            }
+
+            fprintf(fpwrite, "%d %.1f\n", totalResults, *maxBenefit);
+            printf("%d %.1f\n", totalResults, *maxBenefit);
+            for (int j=0; j<r; j++) {
+                if(results[combination[j][1]] != -1) {
+                    // printf("%d ", combination[j][1]);
+                    for (int i=0; i<r; i++) {
+                        if(combination[j][1] == combination[i][1]) {
+                            printf("%d ", combination[i][0]);
+                        }
+                    }
+                    // printf("\n");
+                    // printf("%d -> %d\n", combination[j][0], combination[j][1]);
                 }
             }
         }
@@ -212,6 +232,6 @@ void combinationUtil(int arr[], int data[], int start, int end, int index, int r
     for (int i=start; i<=end && end-i+1 >= r-index; i++)
     {
         data[index] = arr[i];
-        combinationUtil(arr, data, i+1, end, index+1, r, graph, combination, maxBenefit);
+        combinationUtil(arr, data, i+1, end, index+1, r, graph, combination, maxBenefit, total, fpwrite);
     }
 }
