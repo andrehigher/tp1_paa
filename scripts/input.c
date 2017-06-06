@@ -16,8 +16,9 @@ void readInput(int argc, char *argv[]){
         printf("%s doesn't exist.\n", argv[1]);
         return;
     }
+    float maxBenefit = 0;
     graph = readNodes(fp);
-    readEdges(graph, fp, fpwrite);
+    readEdges(graph, fp, fpwrite, &maxBenefit);
     fclose(fp);
 }
 
@@ -38,18 +39,27 @@ Graph* readNodes(FILE *fp){
     return head;
 }
 
-void readEdges(Graph *graph, FILE *fp, FILE *fpwrite){
+void readEdges(Graph *graph, FILE *fp, FILE *fpwrite, float *maxBenefit){
     int i, sharing;
     int source, destination;
     fscanf(fp, "%d", &sharing);
     int combination[sharing][2];
+    int arr[sharing];
     for (i=0; i<sharing; i++) {
+        arr[i] = i;
         fscanf(fp, "%d %d", &source, &destination);
         addEdge(graph, source, destination);
         combination[i][0] = source;
         combination[i][1] = destination;
     }
-    printCombination(graph, combination, sharing, fpwrite);
+
+    int r;
+    int n = sizeof(arr)/sizeof(arr[0]);
+    for(r=1;r<=sharing; r++) {
+        printCombinationAux(arr, n, r, graph, combination, maxBenefit);
+    }
+    // old method
+    // printCombination(graph, combination, sharing, fpwrite);
 }
 
 void printCombination(Graph *graph, int combination[][2], int total, FILE *fpwrite) {
@@ -157,4 +167,51 @@ void printCombination(Graph *graph, int combination[][2], int total, FILE *fpwri
         fprintf(fpwrite, "0 0.0");
     }
     fclose(fpwrite);
+}
+
+void printCombinationAux(int arr[], int n, int r, Graph *graph, int combination[][2], float *maxBenefit) {
+    // A temporary array to store all combination one by one
+    int data[r];
+ 
+    // Print all combination using temprary array 'data[]'
+    combinationUtil(arr, data, 0, n-1, 0, r, graph, combination, maxBenefit);
+}
+
+void combinationUtil(int arr[], int data[], int start, int end, int index, int r, Graph *graph, int combination[][2], float *maxBenefit) {
+    // Current combination is ready to be printed, print it
+    if (index == r)
+    {
+        float benefit = 0, auxBenefit = 0;
+        resetAvaiableSeats(graph);
+        for (int j=0; j<r; j++) {
+            if(checkPassengerAvailability(graph, combination[j][0]) == 1 && checkDriverAvailability(graph, combination[j][1]) == 1 && checkIsDriving(graph, combination[j][0]) == 0 && checkAvailability(graph, combination[j][0]) == 1 && checkSeats(graph, combination[j][0], combination[j][1]) == 1) {
+                setTravel(graph, combination[j][0], combination[j][1]);
+                benefit += calculateBenefit(graph, combination[j][0], combination[j][1]);
+            }
+        }
+        if(benefit > *maxBenefit) {
+            *maxBenefit = benefit;
+            printf("\n\nFOUND MAX BENEFIT\n");
+            printf("benefit: %.1f\n", benefit);
+            resetAvaiableSeats(graph);
+            for (int j=0; j<r; j++) {
+                if(checkPassengerAvailability(graph, combination[j][0]) == 1 && checkDriverAvailability(graph, combination[j][1]) == 1 && checkAvailability(graph, combination[j][0]) == 1 && checkSeats(graph, combination[j][0], combination[j][1]) == 1) {
+                    setTravel(graph, combination[j][0], combination[j][1]);
+                    benefit += calculateBenefit(graph, combination[j][0], combination[j][1]);
+                    printf("index: %d\t %d -> %d\n", data[j], combination[j][0], combination[j][1]);
+                }
+            }
+        }
+        return;
+    }
+ 
+    // replace index with all possible elements. The condition
+    // "end-i+1 >= r-index" makes sure that including one element
+    // at index will make a combination with remaining elements
+    // at remaining positions
+    for (int i=start; i<=end && end-i+1 >= r-index; i++)
+    {
+        data[index] = arr[i];
+        combinationUtil(arr, data, i+1, end, index+1, r, graph, combination, maxBenefit);
+    }
 }

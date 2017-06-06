@@ -12,6 +12,8 @@ Graph* createNode(int travelId, int passenger, int driver, int amount, int seats
     graph->Seats = seats;
     graph->Benefit = benefit;
     graph->RemainingSeats = seats - amount;
+    graph->Available = 1;
+    graph->isDriving = 0;
     graph->ListAdj = NULL;
     graph->Next = NULL;
     return graph;
@@ -80,18 +82,33 @@ float calculateBenefit(Graph *graph, int source, int destination) {
         aux = aux->Next;
     }
 
-    if(nodeDestination->RemainingSeats - nodeSource->Amount >= 0) {
-        nodeDestination->RemainingSeats -= nodeSource->Amount;
-        return nodeSource->Benefit;
-    } else {
-        return 0;
+    return nodeSource->Benefit;
+}
+
+void setTravel(Graph *graph, int source, int destination) {
+    Graph *aux = graph;
+    Graph *nodeSource = NULL, *nodeDestination = NULL;
+    while(aux != NULL) {
+        if(source == aux->TravelId){
+            nodeSource = aux;
+        }
+        if(destination == aux->TravelId){
+            nodeDestination = aux;
+        }
+        aux = aux->Next;
     }
+
+    nodeDestination->RemainingSeats = nodeDestination->RemainingSeats - nodeSource->Amount;
+    nodeSource->Available = 0;
+    nodeDestination->isDriving = 1;
 }
 
 void resetAvaiableSeats(Graph *graph) {
     Graph *aux = graph;
     while(aux != NULL) {
         aux->RemainingSeats = aux->Seats - aux->Amount;
+        aux->Available = 1;
+        aux->isDriving = 0;
         aux = aux->Next;
     }
 }
@@ -105,4 +122,67 @@ int checkPassengerAvailability(Graph *graph, int source) {
         aux = aux->Next;
     }
     return 0;
+}
+
+int checkDriverAvailability(Graph *graph, int source) {
+    Graph *aux = graph;
+    while(aux != NULL) {
+        if(aux->TravelId == source) {
+            return aux->Driver;
+        }
+        aux = aux->Next;
+    }
+    return 0;
+}
+
+int checkAvailability(Graph *graph, int source) {
+    Graph *aux = graph;
+    while(aux != NULL) {
+        if(aux->TravelId == source) {
+            return aux->Available;
+        }
+        aux = aux->Next;
+    }
+    return 0;
+}
+
+int checkIsDriving(Graph *graph, int source) {
+    Graph *aux = graph;
+    while(aux != NULL) {
+        if(aux->TravelId == source) {
+            return aux->isDriving;
+        }
+        aux = aux->Next;
+    }
+    return 0;
+}
+
+int checkSeats(Graph *graph, int source, int destination) {
+    Graph *aux = graph;
+    Graph *nodeSource = NULL, *nodeDestination = NULL;
+        
+    while(aux != NULL) {
+        if(source == aux->TravelId) {
+            nodeSource = aux;
+        }
+        if(destination == aux->TravelId){
+            nodeDestination = aux;
+        }
+        aux = aux->Next;
+    }
+    if(nodeDestination->RemainingSeats >= nodeSource->Amount) {
+        return 1;
+    }
+    return 0;
+}
+
+void printNode(Graph *graph, int source) {
+    Graph *aux = graph;
+    while(aux != NULL) {
+        if(aux->TravelId == source) {
+            printf("%d %d %d %d %d %f %d %d %d\n", aux->TravelId, aux->Passenger, aux->Driver, aux->Amount, aux->Seats, aux->Benefit, aux->RemainingSeats, aux->Available, aux->isDriving);
+            return;
+        }
+        aux = aux->Next;
+    }
 }
